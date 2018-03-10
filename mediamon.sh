@@ -66,5 +66,3 @@ else
 		fi
         done < $MEDIAMON_HOME/media.status
 fi
-# cat $MEDIAMON_HOME/media.status
-# cat  $MEDIAMON_LOG/mediamon.log
