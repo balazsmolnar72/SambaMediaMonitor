@@ -14,7 +14,7 @@ if [ "$?" == "0" ]
 then
 	echo -n >$MEDIAMON_HOME/media.status
 else
-	locked=$( /bin/sed  "1,/Locked files:/d" < <(echo "$status" | grep -Fvf $MEDIAMON_HOME/mediaexception) )
+	locked="$( /bin/sed  "1,/Locked files:/d" < <(echo "$status" | grep -Fvf $MEDIAMON_HOME/mediaexception) )"
  	numfiles=$(($(/bin/sed  "1,/Locked files:/d" < <(echo "$status" | grep -Fvf $MEDIAMON_HOME/mediaexception) | wc -l)-2))
 	if [ "$numfiles" == "0" ]
 	then
@@ -25,7 +25,7 @@ else
 		/usr/bin/touch $MEDIAMON_HOME/media.status
 		while read file
 		do
-			filename=$( echo "$file" | /usr/bin/tr -s ' ' | /usr/bin/awk '{ print $7"/"$8}')
+			filename="$( echo "$file" | /usr/bin/tr -s ' ' | /usr/bin/awk '{ print $7"/"$8}')"
 			echo -n "Filename:$filename " >> $MEDIAMON_HOME/media.status
 			since=$( echo "$file" | /usr/bin/tr -s ' ' | /usr/bin/cut -d' ' -f9- )
 			echo -n "since:" >> $MEDIAMON_HOME/media.status
@@ -49,20 +49,20 @@ then
 		duration=$(( $(/bin/date "+%s") - $(/bin/date -d "$(echo $file | /usr/bin/cut -d':' -f3)" '+%s') ))
 		/usr/bin/printf "%02d:%02d:%02d\n" $(( $duration/3600 )) $(( $duration%3600/60 )) $(( $duration%3600%60 )) 
 		} >> $MEDIAMON_LOG/mediamon.log
-		filename=$(echo $file | /usr/bin/cut -d' ' -f1 | /usr/bin/cut -d':' -f2 | /usr/bin/awk -F'/' '{ print $NF }')
+		filename="$(echo $file | /usr/bin/cut -d' ' -f1 | /usr/bin/cut -d':' -f2 | /usr/bin/awk -F'/' '{ print $NF }')"
 		if [ -e $MEDIAMON_HOME/active ] && ! grep "$filename" $MEDIAMON_HOME/media.status
                 then
 			echo "$(/bin/date "+%x %X") stopped:$filename" | /home/balazs/bin/notifyBalazs
                 fi
-	done < $MEDIAMON_HOME/media.old
+	done < "$MEDIAMON_HOME/media.old"
 else
         while read file
         do
-                filename=$(echo $file | /usr/bin/cut -d' ' -f1 | /usr/bin/cut -d':' -f2 | /usr/bin/awk -F'/' '{ print $NF }')
+                filename="$(echo $file | /usr/bin/cut -d' ' -f1 | /usr/bin/cut -d':' -f2 | /usr/bin/awk -F'/' '{ print $NF }')"
  		if [ -e $MEDIAMON_HOME/active ] && ! grep "$filename" $MEDIAMON_HOME/media.old
 		then
                         echo "$(/bin/date "+%x %X") started:$filename" | /home/balazs/bin/notifyBalazs
  
 		fi
-        done < $MEDIAMON_HOME/media.status
+        done < "$MEDIAMON_HOME/media.status"
 fi
